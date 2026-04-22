@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
+
+const MAX_SEARCH_LENGTH = 100; // 搜索输入最大长度
+const DEBOUNCE_MS = 300; // 防抖延迟
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -11,15 +14,31 @@ interface SearchBarProps {
 export function SearchBar({ onSearch, placeholder = '搜索 AI 工具...' }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // 清理防抖定时器
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   const handleSearch = useCallback((value: string) => {
-    setQuery(value);
-    onSearch(value);
+    // 输入长度限制，防止超长输入
+    const sanitized = value.slice(0, MAX_SEARCH_LENGTH);
+    setQuery(sanitized);
+
+    // 防抖：避免每次按键都触发搜索
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      onSearch(sanitized);
+    }, DEBOUNCE_MS);
   }, [onSearch]);
 
   const handleClear = useCallback(() => {
     setQuery('');
     onSearch('');
+    if (debounceRef.current) clearTimeout(debounceRef.current);
   }, [onSearch]);
 
   return (
@@ -39,12 +58,17 @@ export function SearchBar({ onSearch, placeholder = '搜索 AI 工具...' }: Sea
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
+          maxLength={MAX_SEARCH_LENGTH}
+          autoComplete="off"
+          spellCheck={false}
+          aria-label="搜索 AI 工具"
           className="w-full pl-12 pr-12 py-4 bg-transparent text-foreground placeholder:text-muted-foreground text-base outline-none"
         />
         {query && (
           <button
             onClick={handleClear}
             className="absolute right-4 p-1 rounded-full hover:bg-muted transition-colors"
+            aria-label="清除搜索"
           >
             <X className="w-4 h-4 text-muted-foreground" />
           </button>

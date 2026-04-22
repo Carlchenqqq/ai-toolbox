@@ -3,6 +3,9 @@ import { CategoryPageClient } from './CategoryPageClient';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
+// 允许的 slug 格式：仅小写字母、数字、连字符
+const SLUG_PATTERN = /^[a-z0-9-]+$/;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
@@ -13,6 +16,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+
+  // 格式验证
+  if (!SLUG_PATTERN.test(slug)) return {};
+
   const category = categories.find(c => c.slug === slug);
   if (!category) return {};
 
@@ -24,6 +31,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPage({ params }: Props) {
   const { slug } = await params;
+
+  // 格式验证：阻止路径遍历等攻击
+  if (!SLUG_PATTERN.test(slug)) {
+    notFound();
+  }
+
   const category = categories.find(c => c.slug === slug);
 
   if (!category) {
