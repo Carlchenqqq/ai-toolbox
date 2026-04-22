@@ -1,4 +1,3 @@
-import Fuse from 'fuse.js';
 import { AITool, Category } from '@/types';
 
 // Category raw data (without counts)
@@ -1233,14 +1232,17 @@ export function getFeaturedTools(): AITool[] {
   return tools.filter(t => t.featured);
 }
 
-// Pre-built Fuse instance for search (reused across calls)
-const fuse = new Fuse(tools, {
-  keys: ['name', 'nameCN', 'description', 'descriptionCN', 'tags', 'category'],
-  threshold: 0.4,
-  includeScore: true,
-});
-
-export function searchTools(query: string): AITool[] {
-  if (!query.trim()) return tools;
-  return fuse.search(query).map((r) => r.item);
+// Simple client-side search (used by HomeClient)
+export function simpleSearch(query: string, toolList: AITool[]): AITool[] {
+  if (!query.trim()) return toolList;
+  const q = query.toLowerCase().trim();
+  return toolList.filter(t =>
+    t.name.toLowerCase().includes(q) ||
+    t.nameCN.toLowerCase().includes(q) ||
+    t.descriptionCN.toLowerCase().includes(q) ||
+    t.description.toLowerCase().includes(q) ||
+    t.tags.some(tag => tag.toLowerCase().includes(q)) ||
+    t.category.toLowerCase().includes(q)
+  );
 }
+

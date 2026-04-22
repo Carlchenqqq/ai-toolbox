@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { CategoryFilter } from '@/components/CategoryFilter';
 import { ToolCard } from '@/components/ToolCard';
-import { searchTools } from '@/data/tools';
+import { simpleSearch } from '@/data/tools';
 import { Zap, TrendingUp, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { AITool, Category } from '@/types';
@@ -28,9 +28,7 @@ export function HomeClient({ initialTools, featuredTools, categories, totalTools
     }
 
     if (searchQuery.trim()) {
-      const searchResults = searchTools(searchQuery);
-      const searchIds = new Set(searchResults.map(t => t.id));
-      result = result.filter(t => searchIds.has(t.id));
+      result = simpleSearch(searchQuery, result);
     }
 
     return result;

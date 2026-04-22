@@ -1,7 +1,10 @@
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
+import { tools } from '@/data/tools';
 
 export function Header() {
+  const totalTools = tools.length;
+
   return (
     <header className="sticky top-0 z-50 glass border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,7 +45,7 @@ export function Header() {
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>50+ AI 工具已收录</span>
+              <span>{totalTools}+ AI 工具已收录</span>
             </div>
           </div>
         </div>
