@@ -4,7 +4,6 @@ import { useState, useMemo } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { CategoryFilter } from '@/components/CategoryFilter';
 import { ToolCard } from '@/components/ToolCard';
-import { simpleSearch } from '@/data/tools';
 import { Zap, TrendingUp, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { AITool, Category } from '@/types';
@@ -14,6 +13,20 @@ interface Props {
   featuredTools: AITool[];
   categories: Category[];
   totalTools: number;
+}
+
+// 内联搜索函数，避免从 tools.ts 导入导致客户端 bundle 缺失
+function clientSearch(query: string, toolList: AITool[]): AITool[] {
+  if (!query.trim()) return toolList;
+  const q = query.toLowerCase().trim();
+  return toolList.filter(t =>
+    t.name.toLowerCase().includes(q) ||
+    t.nameCN.toLowerCase().includes(q) ||
+    t.descriptionCN.toLowerCase().includes(q) ||
+    t.description.toLowerCase().includes(q) ||
+    t.tags.some(tag => tag.toLowerCase().includes(q)) ||
+    t.category.toLowerCase().includes(q)
+  );
 }
 
 export function HomeClient({ initialTools, featuredTools, categories, totalTools }: Props) {
@@ -28,7 +41,7 @@ export function HomeClient({ initialTools, featuredTools, categories, totalTools
     }
 
     if (searchQuery.trim()) {
-      result = simpleSearch(searchQuery, result);
+      result = clientSearch(searchQuery, result);
     }
 
     return result;
@@ -80,7 +93,7 @@ export function HomeClient({ initialTools, featuredTools, categories, totalTools
 
       {/* Categories Section */}
       <section id="categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
+        <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} categories={categories} />
       </section>
 
       {/* Featured Section (only show when no filter) */}

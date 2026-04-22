@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { categories } from '@/data/tools';
+import { Category } from '@/types';
 
 interface CategoryFilterProps {
   activeCategory: string | null;
   onCategoryChange: (slug: string | null) => void;
+  categories: Category[];
 }
 
-export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFilterProps) {
+export function CategoryFilter({ activeCategory, onCategoryChange, categories }: CategoryFilterProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const displayCategories = isExpanded ? categories : categories.slice(0, 8);
 
