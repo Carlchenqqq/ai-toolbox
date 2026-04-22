@@ -11,6 +11,8 @@ export interface AITool {
   pricing: 'Free' | 'Freemium' | 'Paid' | 'Open Source';
   rating: number;
   featured?: boolean;
+  isNew?: boolean;
+  dateAdded?: string;
 }
 
 export interface Category {

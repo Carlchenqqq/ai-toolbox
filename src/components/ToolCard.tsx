@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Star, ExternalLink } from 'lucide-react';
+import { Star, ExternalLink, Sparkles } from 'lucide-react';
 import { AITool } from '@/types';
 
 interface ToolCardProps {
@@ -32,6 +32,14 @@ export function ToolCard({ tool, index = 0 }: ToolCardProps) {
       {tool.featured && (
         <div className="absolute -top-2.5 -right-2.5 px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold shadow-md">
           精选
+        </div>
+      )}
+
+      {/* New badge */}
+      {tool.isNew && !tool.featured && (
+        <div className="absolute -top-2.5 -right-2.5 px-2.5 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-semibold shadow-md flex items-center gap-1">
+          <Sparkles className="w-2.5 h-2.5" />
+          新收录
         </div>
       )}
 

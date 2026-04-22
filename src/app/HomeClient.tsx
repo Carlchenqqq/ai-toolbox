@@ -5,7 +5,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { CategoryFilter } from '@/components/CategoryFilter';
 import { ToolCard } from '@/components/ToolCard';
 import { searchTools } from '@/data/tools';
-import { Zap, TrendingUp, ArrowRight } from 'lucide-react';
+import { Zap, TrendingUp, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { AITool, Category } from '@/types';
 
@@ -35,6 +35,10 @@ export function HomeClient({ initialTools, featuredTools, categories, totalTools
 
     return result;
   }, [searchQuery, activeCategory, initialTools]);
+
+  const newTools = useMemo(() => {
+    return initialTools.filter(t => t.isNew);
+  }, [initialTools]);
 
   const activeCategoryName = activeCategory
     ? categories.find(c => c.slug === activeCategory)?.name
@@ -98,6 +102,26 @@ export function HomeClient({ initialTools, featuredTools, categories, totalTools
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {featuredTools.map((tool, i) => (
+              <ToolCard key={tool.id} tool={tool} index={i} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* New Tools Section (only show when no filter and there are new tools) */}
+      {!searchQuery && !activeCategory && newTools.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-5 h-5 text-emerald-500" />
+              <h2 className="text-xl font-bold">🆕 新收录</h2>
+            </div>
+            <span className="text-sm text-muted-foreground">
+              {newTools.length} 个新工具
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {newTools.map((tool, i) => (
               <ToolCard key={tool.id} tool={tool} index={i} />
             ))}
           </div>
